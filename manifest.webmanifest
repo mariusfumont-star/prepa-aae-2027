@@ -1,0 +1,47 @@
+{
+  "name": "Prépa Attaché AAE 2027",
+  "short_name": "Prépa AAE",
+  "description": "Préparation au concours interne d'attaché d'administration de l'État (MENJ/MESR), session 2027.",
+  "lang": "fr",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5f6f8",
+  "theme_color": "#23409a",
+  "categories": [
+    "education",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Veille d'actualité",
+      "url": "./#veille"
+    },
+    {
+      "name": "Entraînement chronométré",
+      "url": "./#entrainement"
+    }
+  ]
+}

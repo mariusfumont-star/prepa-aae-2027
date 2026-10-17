@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function connecte() { return request.auth != null; }
+    function gestionnaire() { return connecte() && request.auth.token.email == "marius.fumont@gmail.com"; }
+    function enEssai() {
+      return exists(/databases/$(database)/documents/comptes/$(request.auth.uid))
+        && request.time < get(/databases/$(database)/documents/comptes/$(request.auth.uid)).data.cree + duration.value(7, 'd');
+    }
+    function abonne() {
+      return exists(/databases/$(database)/documents/abonnes/$(request.auth.uid))
+        && request.time < get(/databases/$(database)/documents/abonnes/$(request.auth.uid)).data.jusqu;
+    }
+    function acces() { return connecte() && (gestionnaire() || abonne() || enEssai()); }
+
+    // Progression de chaque candidat : lui seul l'écrit ; le gestionnaire peut la lire.
+    match /users/{userId}/{document=**} {
+      allow read: if (connecte() && request.auth.uid == userId) || gestionnaire();
+      allow write: if connecte() && request.auth.uid == userId;
+    }
+
+    // Fiche de compte : créée une seule fois par le candidat, date d'inscription imposée par le serveur.
+    match /comptes/{uid} {
+      allow read: if (connecte() && request.auth.uid == uid) || gestionnaire();
+      allow create: if connecte() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['email', 'cree', 'vu'])
+        && request.resource.data.cree == request.time;
+      allow update: if (connecte() && request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['vu']))
+        || gestionnaire();
+      allow delete: if gestionnaire();
+    }
+
+    // Abonnements : seul le gestionnaire les active, prolonge ou coupe.
+    match /abonnes/{uid} {
+      allow read: if (connecte() && request.auth.uid == uid) || gestionnaire();
+      allow write: if gestionnaire();
+    }
+
+    // Contenus de la version complète : essai en cours, abonnement actif ou gestionnaire.
+    match /contenu/{doc} {
+      allow read: if acces();
+      allow write: if gestionnaire();
+    }
+
+    // Clés et réglages.
+    match /config/cle { allow read: if acces(); allow write: if gestionnaire(); }
+    match /config/admin { allow read: if gestionnaire(); }
+    match /config/paiement { allow read: if connecte(); allow write: if gestionnaire(); }
+    match /config/ia { allow read: if connecte(); allow write: if gestionnaire(); }
+  }
+}
