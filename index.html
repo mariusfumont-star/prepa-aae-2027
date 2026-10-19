@@ -2210,7 +2210,7 @@ async function publierContenus(force){
 function gStatut(r){
   const now=Date.now();
   if(ADMIN_EMAILS.includes(r.email)) return {k:"admin",t:"Gestionnaire",c:"ok"};
-  if(r.abFin>now) return r.abFin>=ILLIMITE-DAY ? {k:"abonne",t:"Abonné",c:"ok"} : {k:"abonne",t:"Accès jusqu'au "+new Date(r.abFin).toLocaleDateString("fr-FR"),c:"ok"};
+  if(r.abFin>now) return r.abFin>=ILLIMITE-DAY ? {k:"abonne",t:"Abonné · illimité",c:"ok"} : {k:"abonne",t:"Accès jusqu'au "+new Date(r.abFin).toLocaleDateString("fr-FR"),c:"ok"};
   if(r.cree && r.cree+ESSAI_JOURS*DAY>now){ const j=Math.ceil((r.cree+ESSAI_JOURS*DAY-now)/DAY); return {k:"essai",t:"Essai · J-"+j,c:"acc"}; }
   if(r.abFin && r.abFin<=now) return {k:"expire",t:"Accès coupé",c:"warn"};
   return {k:"expire",t:"Essai terminé",c:"warn"};
@@ -2256,7 +2256,7 @@ function gRender(){
     const mk=(t,fn,ghost)=>{ const b=el("button",{type:"button",class:"btn"+(ghost?" ghost":""),style:"padding:3px 9px;font-size:.8rem",text:t}); b.addEventListener("click",fn); acts.append(b); };
     if(s.k!=="admin"){
       if(s.k!=="abonne" || r.abFin<ILLIMITE-DAY) mk("Activer l'abonnement",()=>gSetAcces(r, ILLIMITE, "Abonnement activé"));
-      mk("+1 mois",()=>gSetAcces(r, Math.max(now, r.abFin<ILLIMITE-DAY? r.abFin:now)+31*DAY, "Accès prolongé d'un mois"), true);
+      if(!(s.k==="abonne" && r.abFin>=ILLIMITE-DAY)) mk("+1 mois",()=>gSetAcces(r, Math.max(now, r.abFin)+31*DAY, "Accès prolongé d'un mois"), true);
       if(s.k==="abonne"){ const b=el("button",{type:"button",class:"btn ghost",style:"padding:3px 9px;font-size:.8rem;color:var(--stamp);border-color:var(--stamp)",text:"Couper l'accès"}); b.addEventListener("click",()=>{ if(b.dataset.armed){ gSetAcces(r, now, "Accès coupé"); } else { b.dataset.armed="1"; b.textContent="Confirmer"; setTimeout(()=>{ if(b.isConnected){ delete b.dataset.armed; b.textContent="Couper l'accès"; } },3000); } }); acts.append(b); }
     }
     const g=G.prog[r.uid];

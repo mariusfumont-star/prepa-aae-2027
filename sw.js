@@ -1,4 +1,4 @@
-const VERSION = "prepa-aae-v8";
+const VERSION = "prepa-aae-v9";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "firebase-config.js", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png"];
 const CACHEABLE_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com", "www.gstatic.com"];
 
