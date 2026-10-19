@@ -48,6 +48,7 @@ service cloud.firestore {
     match /sa_contenu/{doc} { allow read: if accesSA(); allow write: if gestionnaire(); }
 
     match /config/cle { allow read: if acces(); allow write: if gestionnaire(); }
+    match /config/sa_cle { allow read: if accesSA(); allow write: if gestionnaire(); }
     match /config/admin { allow read: if gestionnaire(); }
     match /config/paiement { allow read: if connecte(); allow write: if gestionnaire(); }
     match /config/sa_paiement { allow read: if connecte(); allow write: if gestionnaire(); }
